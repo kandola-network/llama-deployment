@@ -26,13 +26,17 @@ async def generate_text(request: TextGenerationRequest):
     
     # Extract the generated text
     generated_text = outputs[0]['generated_text']
-
-    # Find and extract the "Answer" part of the text using string manipulation
+    print(f"Generated text: {generated_text}")
+    
+    # Find and extract the "Answer" part of the text
     answer_start = generated_text.find("Answer:")
+    
     if answer_start != -1:
-        answer_end = generated_text.find("Explanation:", answer_start)
+        # Look for the end of the first answer by checking for the next "Question:" or end of the text
+        answer_end = generated_text.find("Question:", answer_start)
         if answer_end == -1:
-            answer_end = len(generated_text)  # No 'Explanation', take until the end
+            answer_end = len(generated_text)  # No more questions, take everything till the end
+
         answer = generated_text[answer_start + len("Answer:"):answer_end].strip()
     else:
         answer = "Answer not found."
